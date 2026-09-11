@@ -1,0 +1,12 @@
+{
+  "name": "conchamagica",
+  "private": true,
+  "description": "Concha Mágica",
+  "license": "MIT",
+  "scripts": {
+    "audios": "node scripts/gerar-audios.js"
+  },
+  "devDependencies": {
+    "msedge-tts": "^2.0.7"
+  }
+}
