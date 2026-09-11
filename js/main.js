@@ -15,73 +15,45 @@ $(function() {
 
     $( "form" ).submit(function( event ) {
         event.preventDefault();
-
-        var keys = Object.keys(answers);
-        answer = answers[keys[keys.length * Math.random() << 0]];
-    
-        $('.answer_').text(answer.texto);
-        playAudio(answer.audio);
+        ask();
     });
 });
 
-// Puxando a corda da concha
-dragElement(document.getElementById("pino"));
+var answerTimer;
 
-var soltouCorda = false;
+// Sorteia uma resposta, mostra a mensagem e toca o áudio
+function ask() {
+    var keys = Object.keys(answers);
+    var answer = answers[keys[keys.length * Math.random() << 0]];
 
-function dragElement(elmnt) {
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  if (document.getElementById(elmnt.id + "header")) {
-    // if present, the header is where you move the DIV from:
-    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-  } else {
-    // otherwise, move the DIV from anywhere inside the DIV:
-    elmnt.onmousedown = dragMouseDown;
-  }
+    shakeConcha();
+    showAnswer(answer.texto);
+    playAudio(answer.audio);
+}
 
-  function dragMouseDown(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // get the mouse cursor position at startup:
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
-    document.onmousemove = elementDrag;
-  }
+function shakeConcha() {
+    var $img = $('#concha-img');
 
-  function elementDrag(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // calculate the new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    
-    //set the element's new position:
-    console.log(elmnt.offsetTop);
-    if (elmnt.offsetTop >= -8) {
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-    } else {
-        elmnt.style.top  = -7;
-        elmnt.style.left = 219;
-    }
-  }
+    $img.removeClass('_shake');
+    $img[0].offsetWidth; // força reflow para reiniciar a animação
+    $img.addClass('_shake');
+}
 
-  function closeDragElement() {
-    // stop moving when mouse button is released:
-    document.onmouseup   = null;
-    document.onmousemove = null;
-    elmnt.style.top  = 54 + "px";
-    elmnt.style.left = 200 + "px";
+// Mensagem que aparece com fade-in, fica um tempo e some com fade-out
+function showAnswer(texto) {
+    var $answer = $('#answer');
+    var fadeOut = $answer.hasClass('_active') ? 400 : 0;
 
-    soltouCorda = true;
+    clearTimeout(answerTimer);
+    $answer.removeClass('_active');
 
-    // Se soltar a corda fazer o script de resposta aqui
-    if (soltouCorda) {
-       soltouCorda = false; 
-    }
-  }
+    // Se já tinha uma resposta na tela, espera ela sumir antes de mostrar a nova
+    answerTimer = setTimeout(function() {
+        $answer.find('span').text(texto);
+        $answer.addClass('_active');
+
+        answerTimer = setTimeout(function() {
+            $answer.removeClass('_active');
+        }, 2500 + texto.length * 60);
+    }, fadeOut);
 }

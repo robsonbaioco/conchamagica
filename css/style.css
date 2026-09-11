@@ -1,5 +1,8 @@
 .container {
 	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	margin: 0 auto;
 	width: 90%;
 	height: 100vh;
@@ -11,36 +14,76 @@ body {
 	background-position: center;
 }
 
+/* Centralizado com flex (sem transform) para a resposta poder ficar acima da corda */
 .content {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
 	width: 500px;
 }
 
 .concha {
+	position: relative;
 	margin: 0 auto 20px;
 	max-width: 300px;
 }
 
-.pino {
-	position: absolute;
-    top: 54px;
-    right: 70px;
-    width: 30px;
+.concha img {
+	display: block;
+	width: 100%;
 }
 
-.pino .linha {
-	display: block;
+.concha img._shake {
+	animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+/* Corda: canvas por cima da página inteira, sem capturar cliques */
+.corda {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* Pino: posicionado via transform pelo corda.js */
+.pino {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 2;
+	visibility: hidden;
+	cursor: grab;
+	touch-action: none;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	will-change: transform;
+}
+
+.pino._ready {
+	visibility: visible;
+}
+
+/* Área de toque maior que o pino, para facilitar no celular */
+.pino::after {
+	content: '';
 	position: absolute;
-	left: -81px;
-    top: 56px;
-    width: 100px;
-	height: 2px;
-	background: #fff;
-	transform: rotate(-45deg);
-	z-index: -1;
+	top: -16px;
+	right: -16px;
+	bottom: -16px;
+	left: -16px;
+	border-radius: 50%;
+}
+
+.pino img {
+	display: block;
+	width: 100%;
+	pointer-events: none;
+}
+
+body._puxando,
+body._puxando .pino {
+	cursor: grabbing;
 }
 
 .Button {
@@ -51,21 +94,64 @@ body {
 	background-color: #ba87c4;
 }
 
+/* Resposta: aparece sobre a concha com fade-in e some com fade-out */
 .answer {
-	position: fixed;
-	top: 50%;
+	position: absolute;
+	top: 58%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	z-index: 3;
 	margin: 0;
-	padding: 10px;
-	color: #000;
-	background-color: rgba(255, 255, 255, 0.7);
-	font-size: 50px;
+	padding: 12px 24px;
+	width: max-content;
+	max-width: 90vw;
+	color: #3d2346;
+	background-color: rgba(255, 255, 255, 0.92);
+	border: 3px solid #000;
+	border-radius: 18px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+	font-size: 28px;
+	font-weight: bold;
+	line-height: 1.2;
+	text-align: center;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transform: translate(-50%, -50%) scale(0.85);
+	transition: opacity 600ms ease, transform 600ms ease, visibility 0s linear 600ms;
+}
+
+.answer._active {
+	opacity: 1;
+	visibility: visible;
+	transform: translate(-50%, -50%) scale(1);
+	transition: opacity 600ms ease, transform 600ms cubic-bezier(.34, 1.56, .64, 1), visibility 0s;
+}
+
+@keyframes shake {
+	10%, 90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+
+	20%, 80% {
+		transform: translate3d(2px, 0, 0);
+	}
+
+	30%, 50%, 70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+
+	40%, 60% {
+		transform: translate3d(4px, 0, 0);
+	}
 }
 
 @media only screen and (max-width: 768px) {
  	.content {
  		width: 90%;
+ 	}
+
+ 	.answer {
+ 		font-size: 22px;
  	}
 
  	/*.concha {

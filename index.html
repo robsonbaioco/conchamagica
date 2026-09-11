@@ -14,13 +14,11 @@
 	<div class="container">
 
 		<div class="content">
-			<div class="concha">
-				<div class="pino" id="pino">
-					<img src="images/pino.png">	
-					<span class="linha"></span>
-				</div>
-				<img src="images/conchasempino.png">
-			</div>		
+			<div class="concha" id="concha">
+				<img src="images/conchasempino.png" id="concha-img" alt="Concha Mágica">
+
+				<p class="answer" id="answer" aria-live="polite"><span></span></p>
+			</div>
 
 			<form action="#" class="Form" method="POST">
 				<div class="form-item">
@@ -28,16 +26,23 @@
 						<input type="" name="question" placeholder="Make a question to the Magic Shell">
 						<button class="Button">Ask</button>
 					</div>
-					<p class="answer_"></p>
 				</div>
 			</form>
 		</div>
 	</div>
 
+	<!-- Corda e pino ficam fora do .content para poderem sair da área da concha -->
+	<canvas class="corda" id="corda"></canvas>
+	<div class="pino" id="pino">
+		<img src="images/pino.png" draggable="false" alt="">
+	</div>
+
 	<script src="js/libs/jquery.min.js"></script>
 	<script src="js/libs/wow.min.js"></script>
+	<script src="js/libs/matter.min.js"></script>
 	<script src="js/audio.js"></script>
 	<script src="js/answer.js"></script>
 	<script src="js/main.js"></script>
+	<script src="js/corda.js"></script>
 </body>
 </html>
