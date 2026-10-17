@@ -14,7 +14,7 @@
     var PINO = { x: 722, y: 207, w: 89, h: 80 }; // pino encaixado na concha (concha.png)
     var FURO = { x: 732, y: 272.5 };             // ponto de onde a corda sai da concha
     var PONTA = { x: -34.5, y: 25.5 };           // onde a corda prende no pino, relativo ao centro dele
-    var COMPRIMENTO_MAX = 800;                   // limite físico da corda
+    var COMPRIMENTO_MAX = 650;                   // limite físico da corda
 
     var SEGMENTOS = 12;
     var SEGUNDOS_PARA_RECOLHER = 2.4; // tempo para recolher a corda inteira depois de soltar

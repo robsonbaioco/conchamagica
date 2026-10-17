@@ -51,5 +51,21 @@
 			texto: 'com toda certeza!',
 			audio: '/audio/audio_com_toda_certeza.mp3'
 		},
-	};	
+		13: {
+			texto: 'nenhum dos dois',
+			audio: '/audio/audio_nenhum_dos_dois.mp3'
+		},
+		14: {
+			texto: 'acho que não',
+			audio: '/audio/audio_acho_que_nao.mp3'
+		},
+		15: {
+			texto: 'siga o cavalo-marinho',
+			audio: '/audio/audio_siga_o_cavalo_marinho.mp3'
+		},
+		16: {
+			texto: 'ninguém chega ao topo ficando sentado no chão',
+			audio: '/audio/audio_ninguem_chega_ao_topo.mp3'
+		},
+	};
 	
