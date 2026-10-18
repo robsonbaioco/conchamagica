@@ -127,6 +127,31 @@ body._puxando .pino {
 	transition: opacity 600ms ease, transform 600ms cubic-bezier(.34, 1.56, .64, 1), visibility 0s;
 }
 
+/* Easter egg: GIF que aparece no lugar da resposta */
+.egg {
+	position: absolute;
+	top: 58%;
+	left: 50%;
+	z-index: 3;
+	width: 340px;
+	max-width: 85vw;
+	border: 3px solid #000;
+	border-radius: 18px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transform: translate(-50%, -50%) scale(0.85);
+	transition: opacity 600ms ease, transform 600ms ease, visibility 0s linear 600ms;
+}
+
+.egg._active {
+	opacity: 1;
+	visibility: visible;
+	transform: translate(-50%, -50%) scale(1);
+	transition: opacity 600ms ease, transform 600ms cubic-bezier(.34, 1.56, .64, 1), visibility 0s;
+}
+
 @keyframes shake {
 	10%, 90% {
 		transform: translate3d(-1px, 0, 0);
