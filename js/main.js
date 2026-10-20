@@ -53,6 +53,10 @@ function ask() {
     var keys = Object.keys(answers);
     var answer = answers[keys[keys.length * Math.random() << 0]];
 
+    if (!emPortugues && answer.ingles) {
+        answer = answer.ingles;
+    }
+
     shakeConcha();
     showAnswer(answer.texto);
     playAudio(answer.audio);
