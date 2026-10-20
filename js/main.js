@@ -1,4 +1,21 @@
+// A página já vem em português; só traduz para inglês se o navegador não estiver em português
+var idiomas = navigator.languages || [navigator.language || 'pt'];
+var emPortugues = idiomas.some(function(idioma) {
+    return /^pt\b/i.test(idioma);
+});
+
+function traduzirParaIngles() {
+    document.documentElement.lang = 'en';
+    $('input[name="question"]').attr('placeholder', 'Ask the Magic Conch a question');
+    $('.Button').text('Ask');
+    $('#egg').attr('alt', 'All hail the Magic Conch!');
+}
+
 $(function() {
+    if (!emPortugues) {
+        traduzirParaIngles();
+    }
+
     $.ajax({
         url: '',
         type: 'post',
@@ -72,7 +89,7 @@ function showAnswer(texto) {
     }, fadeOut);
 }
 
-// Easter egg: "todos saudam a concha mágica"
+// Easter egg: "todos saudam a concha mágica" (ou "all hail the magic conch")
 var eggGifs = ['images/saudacao1.gif', 'images/saudacao2.gif'];
 var eggTimer;
 
@@ -87,7 +104,9 @@ function normalizar(texto) {
 }
 
 function ehSaudacao(texto) {
-    return normalizar(texto || '') === 'todos saudam a concha magica';
+    var frase = normalizar(texto || '');
+
+    return frase === 'todos saudam a concha magica' || frase === 'all hail the magic conch';
 }
 
 // Mostra um dos GIFs no lugar da resposta, com o dobro do tempo em tela
