@@ -1,20 +1,66 @@
-// A página já vem em português; só traduz para inglês se o navegador não estiver em português
-var idiomas = navigator.languages || [navigator.language || 'pt'];
-var emPortugues = idiomas.some(function(idioma) {
-    return /^pt\b/i.test(idioma);
-});
+// Idioma da página: o que a pessoa escolheu na bandeirinha ou, se nunca escolheu, o do navegador
+var TEXTOS = {
+    pt: {
+        lang: 'pt-BR',
+        pergunta: 'Faça uma pergunta à Concha Mágica',
+        botao: 'Perguntar',
+        saudacao: 'Todos saúdam a Concha Mágica!',
+        trocar: 'Switch to English'
+    },
+    en: {
+        lang: 'en',
+        pergunta: 'Ask the Magic Conch a question',
+        botao: 'Ask',
+        saudacao: 'All hail the Magic Conch!',
+        trocar: 'Mudar para português'
+    }
+};
+var CHAVE_IDIOMA = 'conchamagica-idioma';
+var idioma = idiomaSalvo() || idiomaDoNavegador();
 
-function traduzirParaIngles() {
-    document.documentElement.lang = 'en';
-    $('input[name="question"]').attr('placeholder', 'Ask the Magic Conch a question');
-    $('.Button').text('Ask');
-    $('#egg').attr('alt', 'All hail the Magic Conch!');
+function idiomaDoNavegador() {
+    var idiomas = navigator.languages || [navigator.language || 'pt'];
+    var emPortugues = idiomas.some(function(item) {
+        return /^pt\b/i.test(item);
+    });
+
+    return emPortugues ? 'pt' : 'en';
+}
+
+// O localStorage pode não existir ou dar erro (janela anônima, cookies bloqueados)
+function idiomaSalvo() {
+    try {
+        var salvo = localStorage.getItem(CHAVE_IDIOMA);
+        return TEXTOS[salvo] ? salvo : null;
+    } catch (erro) {
+        return null;
+    }
+}
+
+function salvarIdioma() {
+    try {
+        localStorage.setItem(CHAVE_IDIOMA, idioma);
+    } catch (erro) {}
+}
+
+function aplicarIdioma() {
+    var textos = TEXTOS[idioma];
+
+    document.documentElement.lang = textos.lang;
+    $('input[name="question"]').attr('placeholder', textos.pergunta);
+    $('.Button').text(textos.botao);
+    $('#egg').attr('alt', textos.saudacao);
+    $('#idioma').attr({ 'aria-label': textos.trocar, title: textos.trocar });
 }
 
 $(function() {
-    if (!emPortugues) {
-        traduzirParaIngles();
-    }
+    aplicarIdioma();
+
+    $('#idioma').on('click', function() {
+        idioma = idioma === 'pt' ? 'en' : 'pt';
+        aplicarIdioma();
+        salvarIdioma();
+    });
 
     $.ajax({
         url: '',
@@ -53,7 +99,7 @@ function ask() {
     var keys = Object.keys(answers);
     var answer = answers[keys[keys.length * Math.random() << 0]];
 
-    if (!emPortugues && answer.ingles) {
+    if (idioma === 'en' && answer.ingles) {
         answer = answer.ingles;
     }
 

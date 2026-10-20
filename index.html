@@ -25,6 +25,27 @@
 </head>
 <body style="background-image: url(images/bg.jpg)">
 
+	<!-- Mostra a bandeira do idioma atual; ao clicar, troca para o outro -->
+	<button type="button" class="idioma" id="idioma" aria-label="Switch to English" title="Switch to English">
+		<svg class="_pt" viewBox="0 0 20 14" aria-hidden="true">
+			<rect width="20" height="14" fill="#009c3b"/>
+			<polygon points="10,1.7 18.3,7 10,12.3 1.7,7" fill="#ffdf00"/>
+			<circle cx="10" cy="7" r="3.3" fill="#002776"/>
+			<path d="M6.9 6.2 Q10 5.4 13.1 7.4" stroke="#fff" stroke-width="0.6" fill="none"/>
+		</svg>
+		<svg class="_en" viewBox="0 0 190 130" aria-hidden="true">
+			<defs>
+				<pattern id="estrelas" width="12.67" height="14" patternUnits="userSpaceOnUse" x="3" y="3">
+					<circle cx="3.2" cy="3.2" r="2.4" fill="#fff"/>
+				</pattern>
+			</defs>
+			<rect width="190" height="130" fill="#b22234"/>
+			<path d="M0 15h190M0 35h190M0 55h190M0 75h190M0 95h190M0 115h190" stroke="#fff" stroke-width="10"/>
+			<rect width="76" height="70" fill="#3c3b6e"/>
+			<rect width="76" height="70" fill="url(#estrelas)"/>
+		</svg>
+	</button>
+
 	<div class="container">
 
 		<div class="content">
