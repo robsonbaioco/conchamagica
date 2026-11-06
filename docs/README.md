@@ -10,7 +10,7 @@ Página estática (HTML, CSS e JavaScript puro, sem build), publicada no GitHub 
 index.html
 ├── css/libs/monalisa.css   framework CSS de terceiros (formulário, botão)
 ├── css/style.css           visual próprio: concha, resposta, easter egg, corda, pino, bandeirinha
-├── js/libs/                jQuery, WOW.js e Matter.js (terceiros, minificados; não editar)
+├── js/libs/                jQuery e Matter.js (terceiros, minificados; não editar)
 ├── js/audio.js             toca os MP3 (um <audio> só, reaproveitado)
 ├── js/answer.js            as respostas (texto + caminho do MP3, em pt e en)
 ├── js/main.js              idioma, sorteio, animações, easter egg
@@ -71,7 +71,7 @@ As tags `og:*` e `twitter:card` do `index.html` fazem a prévia ao compartilhar 
 
 ## Dados
 
-O único dado gravado é a escolha de idioma (`localStorage`, chave `conchamagica-idioma`). Nada é enviado para servidor (ver a observação sobre o `$.ajax` em "Pontos frágeis").
+O único dado gravado é a escolha de idioma (`localStorage`, chave `conchamagica-idioma`). Nada é enviado para servidor.
 
 ## Manutenção
 
@@ -99,10 +99,8 @@ Não há testes automáticos. Abra o `index.html` no navegador (direto do disco 
 
 ## Pontos frágeis conhecidos
 
-- **`$.ajax` sem uso** em main.js: ao abrir, a página faz um POST para ela mesma e ignora a resposta (sobra do começo do projeto). Num site estático ele só falha; não tem efeito para a pessoa, mas aparece no console/rede.
-- **WOW.js carregado sem uso**: nenhum elemento tem a classe `wow`. O `new WOW(...).init()` não faz nada visível.
-- **Edge TTS não oficial**: o script usa um serviço gratuito da Microsoft que pode mudar ou parar. Os áudios já gerados continuam valendo; para frases novas, seria preciso outra forma de gerar o MP3. Trocar de voz rápido demais faz o serviço recusar (por isso a espera de 3 s entre amostras).
-- **Áudio no iOS** depende do truque do áudio mudo no primeiro toque no pino. Quem só usa o formulário toca o áudio direto no clique, que já é um gesto.
-- **Medidas fixas da imagem** em corda.js: trocar a imagem da concha sem refazer as medidas desalinha o pino e o furo.
-- **Sorteio sem memória**: a mesma resposta pode sair duas vezes seguidas (de propósito ou não, é como o código está).
-- **Bibliotecas antigas e minificadas** em `js/libs/` (jQuery, WOW.js, Matter.js 0.20.0) e `css/libs/monalisa.css`: são copiadas no repositório, não vêm do npm; atualizar é trocar o arquivo à mão.
+- **Edge TTS não oficial**: o script usa um serviço gratuito da Microsoft que pode mudar ou parar. Os áudios já gerados continuam valendo; para frases novas, seria preciso outra forma de gerar o MP3. Trocar de voz rápido demais faz o serviço recusar (por isso a espera de 3 s entre amostras). Continua: serviço externo; só dá para tratar quando ele mudar.
+- **Áudio no iOS** depende do truque do áudio mudo no primeiro toque no pino. Quem só usa o formulário toca o áudio direto no clique, que já é um gesto. Continua: só dá para testar num iPhone.
+- **Medidas fixas da imagem** em corda.js: trocar a imagem da concha sem refazer as medidas desalinha o pino e o furo. Continua: regra de manutenção (receita em "Mudar a concha ou o pino").
+- **Sorteio sem memória**: a mesma resposta pode sair duas vezes seguidas (de propósito ou não, é como o código está). Continua: depende de decisão (a concha do desenho repete respostas).
+- **Bibliotecas antigas e minificadas** em `js/libs/` (jQuery, Matter.js 0.20.0) e `css/libs/monalisa.css`: são copiadas no repositório, não vêm do npm; atualizar é trocar o arquivo à mão. Continua: atualizar o jQuery ou o Matter.js pede teste manual da corda e do formulário.

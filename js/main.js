@@ -69,23 +69,6 @@ $(function() {
         salvarIdioma();
     });
 
-    // Pedido POST para a própria página, cuja resposta ninguém usa (sobra do começo do projeto). Num site
-    // estático como o GitHub Pages ele falha sem efeito nenhum para a pessoa.
-    $.ajax({
-        url: '',
-        type: 'post',
-        dataType: 'json',
-    })
-    .done(function() {
-        console.log("success");
-    });
-
-    // wow
-    // WOW.js anima elementos com a classe "wow" ao rolar; hoje nenhum elemento da página usa essa classe.
-    new WOW({
-        offset: 300
-    }).init();
-
     // Enviar a pergunta (Enter ou botão Perguntar): a frase de saudação dispara o easter egg; qualquer outra, uma resposta.
     $( "form" ).submit(function( event ) {
         event.preventDefault();
