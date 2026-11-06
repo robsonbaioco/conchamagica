@@ -1,3 +1,6 @@
+// Lógica da página (com jQuery): idioma (português/inglês), sorteio da resposta, animações da concha e o
+// easter egg. Usa `answers` (answer.js) e playAudio (audio.js); ask() também é chamado por corda.js quando
+// a cordinha chega no limite. Carregado depois das bibliotecas e de audio.js/answer.js (ver index.html).
 // Idioma da página: o que a pessoa escolheu na bandeirinha ou, se nunca escolheu, o do navegador
 var TEXTOS = {
     pt: {
@@ -18,6 +21,7 @@ var TEXTOS = {
 var CHAVE_IDIOMA = 'conchamagica-idioma';
 var idioma = idiomaSalvo() || idiomaDoNavegador();
 
+/** "pt" se alguma língua preferida do navegador for português; senão "en". */
 function idiomaDoNavegador() {
     var idiomas = navigator.languages || [navigator.language || 'pt'];
     var emPortugues = idiomas.some(function(item) {
@@ -37,12 +41,14 @@ function idiomaSalvo() {
     }
 }
 
+/** Grava a escolha da bandeirinha (se o localStorage não deixar, a escolha vale só até recarregar). */
 function salvarIdioma() {
     try {
         localStorage.setItem(CHAVE_IDIOMA, idioma);
     } catch (erro) {}
 }
 
+/** Troca os textos da página (lang, placeholder, botão, texto alternativo do GIF, dica da bandeirinha) para o idioma atual. */
 function aplicarIdioma() {
     var textos = TEXTOS[idioma];
 
@@ -53,6 +59,7 @@ function aplicarIdioma() {
     $('#idioma').attr({ 'aria-label': textos.trocar, title: textos.trocar });
 }
 
+// Ao carregar a página: aplica o idioma, liga a bandeirinha e o formulário e pré-carrega os GIFs.
 $(function() {
     aplicarIdioma();
 
@@ -62,6 +69,8 @@ $(function() {
         salvarIdioma();
     });
 
+    // Pedido POST para a própria página, cuja resposta ninguém usa (sobra do começo do projeto). Num site
+    // estático como o GitHub Pages ele falha sem efeito nenhum para a pessoa.
     $.ajax({
         url: '',
         type: 'post',
@@ -72,10 +81,12 @@ $(function() {
     });
 
     // wow
+    // WOW.js anima elementos com a classe "wow" ao rolar; hoje nenhum elemento da página usa essa classe.
     new WOW({
         offset: 300
     }).init();
 
+    // Enviar a pergunta (Enter ou botão Perguntar): a frase de saudação dispara o easter egg; qualquer outra, uma resposta.
     $( "form" ).submit(function( event ) {
         event.preventDefault();
 
@@ -92,6 +103,7 @@ $(function() {
     });
 });
 
+// Temporizador da resposta na tela (troca e some); cancelado quando outra resposta ou o easter egg entra.
 var answerTimer;
 
 // Sorteia uma resposta, mostra a mensagem e toca o áudio
@@ -108,6 +120,7 @@ function ask() {
     playAudio(answer.audio);
 }
 
+/** Faz a concha tremer (reinicia a animação CSS _shake mesmo se ela já estava rodando). */
 function shakeConcha() {
     var $img = $('#concha-img');
 
@@ -153,6 +166,7 @@ function normalizar(texto) {
         .trim();
 }
 
+/** A pergunta é "todos saudam a concha mágica" (ou "all hail the magic conch"), ignorando acentos, maiúsculas e pontuação. */
 function ehSaudacao(texto) {
     var frase = normalizar(texto || '');
 

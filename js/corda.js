@@ -2,6 +2,9 @@
 // Puxe o pino (mouse ou dedo): a corda sai da concha até um limite físico e, ao chegar
 // nele, a concha responde. Ao soltar, a corda é recolhida devagar, como num brinquedo de
 // puxar a cordinha.
+// Depende do Matter.js (js/libs/matter.min.js) e chama ask() (main.js) e unlockAudio() (audio.js).
+// O pino é um <div> com imagem posicionado por CSS transform; a corda é desenhada no <canvas id="corda">,
+// que cobre a tela inteira. Coordenadas em pixels da janela (as do Matter também).
 (function() {
     var Engine = Matter.Engine,
         Bodies = Matter.Bodies,
@@ -16,6 +19,7 @@
     var PONTA = { x: -34.5, y: 25.5 };           // onde a corda prende no pino, relativo ao centro dele
     var COMPRIMENTO_MAX = 650;                   // limite físico da corda
 
+    // A corda é uma corrente de SEGMENTOS bolinhas ligadas por restrições de distância (Matter.Constraint).
     var SEGMENTOS = 12;
     var SEGUNDOS_PARA_RECOLHER = 2.4; // tempo para recolher a corda inteira depois de soltar
     var DURACAO_ENCAIXE = 220;        // ms da animação do pino encaixando na concha
@@ -40,6 +44,8 @@
     var encaixe = null, anguloAnterior = 0;
     var desenhouCorda = false;
 
+    // Mundo da física: gravidade para baixo e muitas iterações, para a corda quase não esticar além do tamanho.
+    // Nada colide com nada (máscara 0): só as ligações importam.
     var engine = Engine.create({
         gravity: { x: 0, y: 2 },
         constraintIterations: 40,
@@ -77,6 +83,10 @@
 
     // ---------------------------------------------------------------- medidas
 
+    /**
+     * Recalcula, a partir do tamanho atual da imagem da concha na tela, a escala e as posições do furo, do
+     * pino encaixado e da ponta da corda (todas definidas em pixels da imagem original de 1080 px).
+     */
     function medir() {
         var r = conchaImg.getBoundingClientRect();
 
@@ -94,6 +104,7 @@
         pinoEl.style.height = PINO.h * escala + 'px';
     }
 
+    /** Ajusta a resolução do canvas da corda ao tamanho na tela vezes o devicePixelRatio (linha nítida). */
     function redimensionarCanvas() {
         var dpr = window.devicePixelRatio || 1;
 
@@ -105,20 +116,24 @@
 
     // ---------------------------------------------------------------- utilidades
 
+    /** Gira o vetor p pelo ângulo (radianos). */
     function girar(p, angulo) {
         var c = Math.cos(angulo), s = Math.sin(angulo);
         return { x: p.x * c - p.y * s, y: p.x * s + p.y * c };
     }
 
+    /** Menor diferença de b para a, entre −π e π. */
     function diferencaAngulo(a, b) {
         return Math.atan2(Math.sin(b - a), Math.cos(b - a));
     }
 
+    /** Posição na tela do ponto onde a corda prende no pino (acompanha o giro do pino). */
     function pontaNoMundo() {
         var p = girar(pontaLocal, pino.angle);
         return { x: pino.position.x + p.x, y: pino.position.y + p.y };
     }
 
+    /** Distância entre dois pontos. */
     function distancia(a, b) {
         return Math.hypot(a.x - b.x, a.y - b.y);
     }
@@ -151,6 +166,7 @@
         });
     }
 
+    /** A corda esticou até o fim: responde (uma vez por puxada, até a corda voltar para menos da metade) e vibra o celular. */
     function chegouNoLimite() {
         if (!armado) {
             return;
@@ -166,6 +182,13 @@
 
     // ---------------------------------------------------------------- simulação
 
+    /**
+     * Um passo fixo da simulação (dt em ms), conforme o estado:
+     * - puxando: o pino segue o ponteiro (sem passar do limite da corda) e gira na direção da corda;
+     * - solto: o pino cai/balança pela física e a corda é recolhida aos poucos;
+     * - encaixando: o pino desliza e desgira até a posição na concha.
+     * Depois, divide o comprimento da corda entre as ligações e avança o Matter.
+     */
     function passo(dt) {
         var velocidadeRecolher = maxComprimento / SEGUNDOS_PARA_RECOLHER * dt / 1000;
 
@@ -237,6 +260,7 @@
         Engine.update(engine, dt);
     }
 
+    /** A corda acabou de ser recolhida: começa a animação do pino voltando para a concha (DURACAO_ENCAIXE). */
     function iniciarEncaixe() {
         Body.setStatic(pino, true);
         estado = 'encaixando';
@@ -250,6 +274,7 @@
 
     // ---------------------------------------------------------------- desenho
 
+    /** Posiciona o pino e desenha a corda (curva suave pelos segmentos, contorno preto e miolo creme); com a corda recolhida, limpa o canvas. */
     function desenhar() {
         pinoEl.style.transform =
             'translate(' + (pino.position.x - PINO.w * escala / 2) + 'px,' +
@@ -293,8 +318,10 @@
 
     // ---------------------------------------------------------------- loop
 
+    // Laço com passo fixo: o tempo real acumulado (no máximo 50 ms por quadro) é consumido em passos de PASSO ms.
     var ultimoTempo = null, acumulado = 0;
 
+    /** Laço de animação (requestAnimationFrame): mede, simula em passos fixos e desenha. */
     function loop(tempo) {
         medir();
 
@@ -317,6 +344,7 @@
 
     // ---------------------------------------------------------------- mouse / toque
 
+    // Pegou o pino (mouse ou dedo; só um ponteiro de cada vez): libera o áudio, solta a corda do furo e começa a puxar.
     pinoEl.addEventListener('pointerdown', function(e) {
         if (ponteiroId !== null || e.button > 0) {
             return;
@@ -345,6 +373,7 @@
         document.body.classList.add('_puxando');
     });
 
+    // O ponteiro que está puxando se moveu: vira o novo alvo do pino (aplicado no próximo passo).
     window.addEventListener('pointermove', function(e) {
         if (e.pointerId !== ponteiroId) {
             return;
@@ -353,6 +382,7 @@
         alvo = { x: e.clientX, y: e.clientY };
     });
 
+    /** Soltou o pino: ele sai com o embalo dos últimos passos (limitado) e passa a ser movido pela física. */
     function soltar(e) {
         if (e.pointerId !== ponteiroId) {
             return;
@@ -390,6 +420,7 @@
 
     // ---------------------------------------------------------------- início
 
+    /** Começa quando a imagem da concha já carregou (as medidas dependem do tamanho dela). */
     function iniciar() {
         medir();
         redimensionarCanvas();

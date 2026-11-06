@@ -1,3 +1,5 @@
+// Toca o áudio das respostas (arquivos MP3 em audio/ e audio/en/). Usado por main.js (playAudio, ao
+// responder) e por corda.js (unlockAudio, no primeiro toque no pino).
 // Um único elemento de áudio reaproveitado: assim uma resposta nova interrompe a anterior
 // e, no celular, basta "destravar" o áudio uma vez durante um toque do usuário.
 var voice = new Audio();
@@ -7,6 +9,7 @@ function audioUrl(path) {
 	return path.replace(/^\//, '');
 }
 
+/** Interrompe o áudio anterior e toca o novo; erros de reprodução (bloqueio do navegador) são ignorados. */
 function playAudio(path) {
 	voice.pause();
 	voice.muted = false;

@@ -1,3 +1,7 @@
+// As respostas da concha: número -> { texto, audio, ingles: { texto, audio } }. Lido no navegador
+// (main.js sorteia uma entrada) e pelo scripts/gerar-audios.js, que roda este arquivo isolado para criar
+// os MP3 que faltam. Os caminhos de áudio começam com "/" e são relativos à raiz do projeto (audio.js
+// tira a barra na hora de tocar). Para acrescentar uma frase, ver o README.
 	var answers = {
 		0: {
 			texto: 'sim',

@@ -4,6 +4,8 @@ Página para responder suas perguntas infundáveis sobre a sua vida monótona cl
 # magic_shell
 Page to answer your unfounded questions about the monotonie of life clicking [here](https://robsonbaioco.github.io/conchamagica)
 
+A documentação para manutenção (como a página, o áudio, a cordinha com física e o idioma funcionam, receitas e pontos frágeis) está em [`docs/`](docs/README.md). Cada arquivo de código também explica no topo o seu papel, e cada função tem um comentário dizendo o que faz.
+
 ## Criando novas frases
 
 As respostas ficam em `js/answer.js` e os áudios são gerados com as vozes do Microsoft Edge

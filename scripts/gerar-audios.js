@@ -12,6 +12,8 @@
 // As frases ficam em js/answer.js. Para criar uma nova, adicione uma entrada com `texto` e `audio`,
 // mais a versão em inglês em `ingles: { texto, audio }`, e rode `npm run audios`.
 
+// Script de Node (CommonJS), rodado por `npm run audios`; depende só do pacote msedge-tts. Lê js/answer.js
+// e grava os MP3 nos caminhos indicados lá (audio/ e audio/en/), e as amostras em amostras-voz/.
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -31,6 +33,7 @@ const TOM = '+0Hz';
 const FRASE_AMOSTRA = 'Com toda certeza! Tente novamente mais tarde.';
 const FRASE_AMOSTRA_INGLES = 'Maybe someday. Try asking again later.';
 
+/** Lê as opções da linha de comando (ver o cabeçalho deste arquivo). */
 function lerArgumentos() {
     const args = process.argv.slice(2);
     const indiceVoz = args.indexOf('--voz');
@@ -55,6 +58,7 @@ function lerRespostas() {
     return Object.values(contexto.answers);
 }
 
+/** Escapa &, < e > (o texto vai dentro de um SSML, que é XML). */
 function escaparXml(texto) {
     return texto
         .replace(/&/g, '&amp;')
@@ -62,10 +66,12 @@ function escaparXml(texto) {
         .replace(/>/g, '&gt;');
 }
 
+/** Promessa que resolve depois de ms milissegundos. */
 function esperar(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/** Pede ao Edge TTS a fala do texto (com VELOCIDADE e TOM) e junta os pedaços do áudio num Buffer MP3. */
 function sintetizar(tts, texto) {
     return new Promise((resolve, reject) => {
         const { audioStream } = tts.toStream(escaparXml(texto), { rate: VELOCIDADE, pitch: TOM });
@@ -91,6 +97,7 @@ async function vozesDoIdioma(tts, ingles) {
     return vozes.filter((v) => ingles ? /^en-(US|GB)$/.test(v.Locale) : v.Locale.startsWith('pt-'));
 }
 
+/** Imprime as vozes do idioma: nome, feminina/masculina e local. */
 async function listarVozes(tts, ingles) {
     const vozes = await vozesDoIdioma(tts, ingles);
 
@@ -100,6 +107,7 @@ async function listarVozes(tts, ingles) {
     });
 }
 
+/** Gera a frase de amostra com cada voz do idioma em amostras-voz/ (ou amostras-voz/en/), pulando as que já existem. */
 async function gerarAmostras(tts, ingles) {
     const vozes = await vozesDoIdioma(tts, ingles);
     const pasta = ingles ? path.join(PASTA_AMOSTRAS, 'en') : PASTA_AMOSTRAS;
@@ -121,6 +129,7 @@ async function gerarAmostras(tts, ingles) {
     }
 }
 
+/** Sugere um caminho de áudio a partir do texto ("não quero" -> /audio/audio_nao_quero.mp3), para o aviso de frase sem áudio. */
 function sugerirNomeArquivo(texto, pasta) {
     const nome = texto
         .normalize('NFD')
@@ -132,6 +141,10 @@ function sugerirNomeArquivo(texto, pasta) {
     return pasta + 'audio_' + nome + '.mp3';
 }
 
+/**
+ * Gera os áudios de uma lista de frases com uma voz: pula os que já existem (a não ser com --todas) e
+ * avisa as frases sem `audio`. Devolve quantos gerou e quantos problemas teve.
+ */
 async function gerarIdioma(tts, frases, { todas, voz, pasta }) {
     let gerados = 0, erros = 0;
 
@@ -165,6 +178,7 @@ async function gerarIdioma(tts, frases, { todas, voz, pasta }) {
     return { gerados, erros };
 }
 
+/** Gera os áudios em português e depois em inglês; avisa as respostas sem versão `ingles`. Devolve o número de problemas. */
 async function gerarRespostas(tts, { todas, voz, vozIngles }) {
     const respostas = lerRespostas();
     let erros = 0;
@@ -191,6 +205,7 @@ async function gerarRespostas(tts, { todas, voz, vozIngles }) {
     return erros;
 }
 
+/** Escolhe a tarefa (listar vozes, amostras ou respostas), fecha a conexão e sai com código 1 se houve problema. */
 async function main() {
     const opcoes = lerArgumentos();
     const tts = new MsEdgeTTS();
